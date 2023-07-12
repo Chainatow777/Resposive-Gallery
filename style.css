@@ -19,11 +19,26 @@ html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border-bottom: 20px solid black;
 }
 
 .sidebar-icon {
   cursor: pointer;
-  font-size: 50px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(#333, #000);
+  text-align: center;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+#plus {
+  font-size: 28px;
+  transition: transform 0.2s;
 }
 
 .content {
@@ -55,16 +70,10 @@ html {
   box-sizing: border-box;
   padding: 10px;
   animation: scaleIn 0.5s ease-in-out;
-  transition: transform 0.3s ease-in-out; 
   cursor: pointer;
   position: relative;
-  width: auto;
-  height: auto;
-}
-
-.grid-cell:hover {
-  transform: scale(1.5);
-  z-index: 10;
+  width: 100%;
+  height: 100%;
 }
 
 @keyframes scaleIn {
@@ -79,9 +88,71 @@ html {
 
 .grid-cell img,
 .grid-cell video {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 300px;
+  max-height: 200px;
   object-fit: contain;
+}
+
+.check-option {
+  margin-top: 10px;
+  align-self: center;
+}
+
+.check-option .checkbox-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.check-option .checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.check-option .checkmark-icon {
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #000000;
+  border-radius: 3px;
+}
+
+.check-option .checkmark-icon i {
+  display: none;
+}
+
+.check-option .checkbox-label input[type="checkbox"]:checked+.checkmark-icon {
+  background-color: #000000;
+}
+
+.check-option .checkbox-label input[type="checkbox"]:checked+.checkmark-icon i {
+  display: inline-block;
+  font-size: 14.5px;
+  color: #fff;
+}
+
+.expanded {
+  cursor: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.expanded.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .selected {

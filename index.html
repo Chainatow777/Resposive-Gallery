@@ -1,15 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
+
 <head>
-    <title>Galeria</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Galeria</title>
 </head>
+
 <body>
     <div class="container">
         <div class="sidebar">
             <div class="sidebar-icon">
-                <i class="bi bi-plus-circle-fill"></i>
+                <p id="plus">+</p>
+            </div>
+            <div class="check-option">
+                <label for="change-positions" class="checkbox-label">
+                    <input type="checkbox" id="change-positions">
+                    <span class="checkmark-icon"><i class="bi bi-pencil-square"></i></span>
+                </label>
             </div>
         </div>
         <div class="content">
@@ -17,7 +28,7 @@
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
+
 </html>
