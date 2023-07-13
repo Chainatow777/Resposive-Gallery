@@ -1,15 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap');
+
 body,
 html {
   margin: 0;
   padding: 0;
-  height: 100%;
+  box-sizing: border-box;
   overflow: hidden;
-  background-color: yellow;
 }
 
 .container {
   display: flex;
-  height: 100%;
+  height: 100vh;
 }
 
 .sidebar {
@@ -42,17 +43,19 @@ html {
 }
 
 .content {
-  background-color: green;
+  background-color: #7ba6cf;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   overflow: hidden;
   padding: 20px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .grid {
-  background-color: red;
+  border-radius: 8px;
+  background-color: #f1f1f1;
   flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -63,12 +66,64 @@ html {
   align-content: flex-start;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: thin;
+  padding: 5px;
+}
+
+.grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.grid::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 3px;
+}
+
+.grid::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.close-button {
+  font-family: 'Roboto', sans-serif;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  background-color: #4b749b;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+  border-bottom-left-radius: 5px;
+  font-weight: 400;
+  font-size: 16px;
+  display: none;
+}
+
+.grid-cell:hover .close-button {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .close-button {
+    display: block;
+  }
+
+  .grid-cell:hover .close-button {
+    display: block;
+  }
+
+  .sidebar-icon {
+    height: 45px;
+    width: 45px;
+  }
 }
 
 .grid-cell {
   display: flex;
   box-sizing: border-box;
-  padding: 10px;
+  padding: 5px;
   animation: scaleIn 0.5s ease-in-out;
   cursor: pointer;
   position: relative;
@@ -156,5 +211,22 @@ html {
 }
 
 .selected {
-  border: 2px solid blue;
+  -webkit-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.62);
+  -moz-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.62);
+  box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.62);
+}
+
+.button-container {
+  display: none;
+}
+
+.grid-cell.expanded .button-container {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  padding: 10px;
+  box-sizing: border-box;
 }
