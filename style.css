@@ -220,13 +220,41 @@ html {
   display: none;
 }
 
+.button-container button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
 .grid-cell.expanded .button-container {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   position: absolute;
   width: 100%;
-  top: 0;
-  left: 0;
+  height: 100%;
   padding: 10px;
   box-sizing: border-box;
+}
+
+.grid-cell.expanded .custom-description {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  width: 10%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.custom-description p{
+  background-color: rebeccapurple;
 }

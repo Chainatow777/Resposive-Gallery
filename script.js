@@ -1,9 +1,10 @@
-var selectedImage = null; // Variável para armazenar a imagem atualmente selecionada
+var selectedImage = null;
+var images = [];
+var descriptions = [];
+var currentIndex = 0;
 
 document.addEventListener("DOMContentLoaded", function () {
     var grid = document.querySelector(".grid");
-    var images = []; // Array para armazenar as imagens adicionadas
-    var currentIndex = 0; // Índice da imagem atualmente expandida
 
     var plus = document.querySelector("#plus");
 
@@ -31,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             var index = images.indexOf(image);
             if (index !== -1) {
                 images.splice(index, 1);
+                descriptions.splice(index, 1);
             }
             gridCell.parentNode.removeChild(gridCell);
         });
@@ -48,6 +50,12 @@ document.addEventListener("DOMContentLoaded", function () {
         var image = new Image();
         image.onload = function () {
             gridCell.appendChild(image);
+
+            var description = document.createElement("div");
+            description.classList.add("image-description");
+            description.style.display = "none";
+            gridCell.appendChild(description);
+
             if (document.getElementById("change-positions").checked) {
                 adicionarBotaoFechar(gridCell);
             }
@@ -58,8 +66,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
         grid.appendChild(gridCell);
 
-        // Adicionar a imagem ao array de imagens
-        images.push(image);
+        Swal.fire({
+            title: "Informações da imagem",
+            html: `
+            <input id="preco" class="swal2-input" placeholder="Preço" type="text">
+            <input id="autor" class="swal2-input" placeholder="Autor" type="text">
+            <input id="descricao" class="swal2-input" placeholder="Descrição" type="text">
+          `,
+            showCancelButton: true,
+            confirmButtonText: "Adicionar",
+            cancelButtonText: "Cancelar",
+            preConfirm: () => {
+                var preco = document.getElementById("preco").value;
+                var autor = document.getElementById("autor").value;
+                var descricao = document.getElementById("descricao").value;
+                adicionarDescricao(gridCell, descricao, preco, autor);
+
+                images.push(image);
+                descriptions.push({
+                    descricao: descricao,
+                    preco: preco,
+                    autor: autor,
+                });
+            },
+        }).then((result) => {
+            if (result.dismiss !== Swal.DismissReason.cancel) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Imagem adicionada com sucesso!",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+        });
     }
 
     var changePositionsCheckbox = document.getElementById("change-positions");
@@ -127,11 +166,29 @@ document.addEventListener("DOMContentLoaded", function () {
             // Adicionar o container de botões ao gridCell
             gridCell.appendChild(buttonContainer);
 
+            var index = Array.from(gridCell.parentNode.children).indexOf(gridCell);
+            var description = gridCell.querySelector(".image-description");
+            if (description) {
+                var descricao = descriptions[index].descricao;
+                var preco = descriptions[index].preco;
+                var autor = descriptions[index].autor;
+
+                description.innerHTML = `
+              <div class="description-content">
+                <p><strong>Preço:</strong> R$ ${preco}</p>
+                <p><strong>Autor:</strong> ${autor}</p>
+                <p><strong>Descrição:</strong> ${descricao}</p>
+              </div>
+            `;
+                description.style.display = "block";
+            }
+
             setTimeout(function () {
                 gridCell.classList.add("active");
             }, 10);
         }
     }
+
 
     function fecharImagem(gridCell) {
         var changePositionsCheckbox = document.getElementById("change-positions");
@@ -151,8 +208,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     image.style.maxHeight = "200px";
                 }
             }, 300);
+
+            var description = gridCell.querySelector(".image-description");
+            if (description) {
+                description.style.display = "none";
+            }
         }
     }
+
 
     function trocarImagens(gridCell1, gridCell2) {
         var changePositionsCheckbox = document.getElementById("change-positions");
@@ -160,19 +223,42 @@ document.addEventListener("DOMContentLoaded", function () {
             var image1 = gridCell1.querySelector("img");
             var image2 = gridCell2.querySelector("img");
 
-            // Remover as imagens dos seus respectivos pais
+            var description1 = gridCell1.querySelector(".image-description");
+            var description2 = gridCell2.querySelector(".image-description");
+
+            // Trocar as imagens
             image1.parentNode.removeChild(image1);
             image2.parentNode.removeChild(image2);
-
-            // Adicionar as imagens nos gridCells correspondentes
             gridCell1.appendChild(image2);
             gridCell2.appendChild(image1);
 
-            // Atualizar a classe "selected" nos gridCells
+            // Trocar as descrições
+            var index1 = Array.from(gridCell1.parentNode.children).indexOf(gridCell1);
+            var index2 = Array.from(gridCell2.parentNode.children).indexOf(gridCell2);
+
+            var tempDescription = descriptions[index1];
+            descriptions[index1] = descriptions[index2];
+            descriptions[index2] = tempDescription;
+
+            description1.innerHTML = `
+        <div class="description-content">
+          <p><strong>Preço:</strong> R$ ${descriptions[index1].preco}</p>
+          <p><strong>Autor:</strong> ${descriptions[index1].autor}</p>
+          <p><strong>Descrição:</strong> ${descriptions[index1].descricao}</p>
+        </div>
+      `;
+
+            description2.innerHTML = `
+        <div class="description-content">
+          <p><strong>Preço:</strong> R$ ${descriptions[index2].preco}</p>
+          <p><strong>Autor:</strong> ${descriptions[index2].autor}</p>
+          <p><strong>Descrição:</strong> ${descriptions[index2].descricao}</p>
+        </div>
+      `;
+
             gridCell1.classList.toggle("selected");
             gridCell2.classList.toggle("selected");
 
-            // Atualizar a variável selectedImage
             selectedImage = gridCell2;
         }
     }
@@ -200,18 +286,35 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function avancarImagem() {
-        currentIndex++; // Avança para a próxima imagem
+        currentIndex++;
         if (currentIndex >= images.length) {
-            currentIndex = 0; // Volta para a primeira imagem se atingir o final do array
+            currentIndex = 0;
         }
         expandirImagem(images[currentIndex].parentNode);
     }
 
     function retrocederImagem() {
-        currentIndex--; // Retrocede para a imagem anterior
+        currentIndex--;
         if (currentIndex < 0) {
-            currentIndex = images.length - 1; // Volta para a última imagem se estiver no início do array
+            currentIndex = images.length - 1;
         }
         expandirImagem(images[currentIndex].parentNode);
     }
+
+    function adicionarDescricao(gridCell, descricao, preco, autor) {
+        var description = document.createElement("div");
+        description.classList.add("custom-description"); // Adicionado
+        description.style.display = "none";
+
+        description.innerHTML = `
+          <div class="description-content">
+            <p><strong>Preço:</strong> R$ ${preco}</p>
+            <p><strong>Autor:</strong> ${autor}</p>
+            <p><strong>Descrição:</strong> ${descricao}</p>
+          </div>
+        `;
+
+        gridCell.appendChild(description);
+    }
+
 });
