@@ -5,22 +5,23 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .container {
   display: flex;
   height: 100vh;
+  box-sizing: border-box;
 }
 
 .sidebar {
   width: 10%;
-  background-color: #f1f1f1;
+  background-color: #FBF9FF;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-bottom: 20px solid black;
+  border-bottom: 20px solid #061327;
 }
 
 .sidebar-icon {
@@ -28,7 +29,7 @@ html {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(#333, #000);
+  background: linear-gradient(#333, #000000);
   text-align: center;
   position: relative;
   display: flex;
@@ -37,13 +38,17 @@ html {
   color: #fff;
 }
 
-#plus {
+.sidebar-icon #plus {
   font-size: 28px;
-  transition: transform 0.2s;
+  transition: font-size 0.3s;
+}
+
+.sidebar-icon:hover #plus {
+  font-size: 38px;
 }
 
 .content {
-  background-color: #7ba6cf;
+  background-color: #4E8DE6;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -55,7 +60,7 @@ html {
 
 .grid {
   border-radius: 8px;
-  background-color: #f1f1f1;
+  background-color: #E8E5DA;
   flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -68,6 +73,7 @@ html {
   overflow-y: auto;
   scrollbar-width: thin;
   padding: 5px;
+  border: 2px dashed #061327;
 }
 
 .grid::-webkit-scrollbar {
@@ -90,7 +96,7 @@ html {
   right: 5px;
   width: 20px;
   height: 20px;
-  background-color: #4b749b;
+  background-color: #320D6D;
   color: rgb(255, 255, 255);
   text-align: center;
   line-height: 20px;
@@ -105,12 +111,34 @@ html {
   display: block;
 }
 
+.edit-button {
+  font-family: 'Roboto', sans-serif;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 20px;
+  height: 20px;
+  background-color: #FBB13C;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+  border-bottom-right-radius: 5px;
+  font-weight: 400;
+  font-size: 16px;
+  display: none;
+}
+
+.grid-cell:hover .edit-button {
+  display: block;
+}
+
 @media (max-width: 900px) {
   .close-button {
     display: block;
   }
 
-  .grid-cell:hover .close-button {
+  .edit-button {
     display: block;
   }
 
@@ -127,7 +155,6 @@ html {
   animation: scaleIn 0.5s ease-in-out;
   cursor: pointer;
   position: relative;
-  width: 100%;
   height: 100%;
 }
 
@@ -195,7 +222,7 @@ html {
   width: 100%;
   height: 100%;
   z-index: 9999;
-  background-color: white;
+  background-color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -211,9 +238,7 @@ html {
 }
 
 .selected {
-  -webkit-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.62);
-  -moz-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.62);
-  box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.62);
+  border: 2px solid #40434E;
 }
 
 .button-container {
@@ -221,8 +246,7 @@ html {
 }
 
 .button-container button {
-  background-color: #4CAF50;
-  color: white;
+  background: linear-gradient(#4E8DE6, #416DB9);
   border: none;
   padding: 10px 20px;
   text-align: center;
@@ -230,7 +254,11 @@ html {
   display: inline-block;
   transition-duration: 0.4s;
   cursor: pointer;
-  border-radius: 4px;
+  color: #FBF9FF;
+}
+
+.button-container button:hover {
+  background: linear-gradient(#3D76CC, #345F9B);
 }
 
 .grid-cell.expanded .button-container {
@@ -244,17 +272,20 @@ html {
   box-sizing: border-box;
 }
 
-.grid-cell.expanded .custom-description {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: absolute;
-  width: 10%;
-  height: 100%;
+.image-description {
+  word-wrap: break-word; 
+  word-break: break-word;
+  position: fixed;
+  bottom: 0.8%;
+  left: 20.2%;
+  color: white;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 2px solid #E8E5DA;
   padding: 10px;
-  box-sizing: border-box;
-}
-
-.custom-description p{
-  background-color: rebeccapurple;
+  width: 250px;
+  font-size: 14px;
+  border-top-right-radius: 10px;
 }

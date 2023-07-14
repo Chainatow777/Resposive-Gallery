@@ -23,49 +23,44 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function adicionarBotaoFechar(gridCell) {
-        var closeButton = document.createElement("div");
-        closeButton.classList.add("close-button");
-        closeButton.innerText = "X";
-        closeButton.addEventListener("click", function (event) {
-            event.stopPropagation();
-            var image = gridCell.querySelector("img");
-            var index = images.indexOf(image);
-            if (index !== -1) {
-                images.splice(index, 1);
-                descriptions.splice(index, 1);
-            }
-            gridCell.parentNode.removeChild(gridCell);
-        });
+        var closeButton = gridCell.querySelector(".close-button");
+        if (!closeButton) {
+            closeButton = document.createElement("div");
+            closeButton.classList.add("close-button");
+            closeButton.innerText = "X";
+            closeButton.addEventListener("click", function (event) {
+                event.stopPropagation();
+                var image = gridCell.querySelector("img");
+                var index = images.indexOf(image);
+                if (index !== -1) {
+                    images.splice(index, 1);
+                    descriptions.splice(index, 1);
+                }
+                gridCell.parentNode.removeChild(gridCell);
+            });
 
-        gridCell.appendChild(closeButton);
+            gridCell.appendChild(closeButton);
+        }
+    }
+
+    function adicionarBotaoEditar(gridCell) {
+        var editButton = gridCell.querySelector(".edit-button");
+        if (!editButton) {
+            editButton = document.createElement("div");
+            editButton.classList.add("edit-button");
+            editButton.innerText = "E";
+            editButton.addEventListener("click", function (event) {
+                event.stopPropagation();
+                var index = Array.from(gridCell.parentNode.children).indexOf(gridCell);
+                var description = descriptions[index];
+                abrirAlertDescricao(gridCell, description);
+            });
+
+            gridCell.appendChild(editButton);
+        }
     }
 
     function adicionarArquivo(url) {
-        var gridCell = document.createElement("div");
-        gridCell.classList.add("grid-cell");
-        gridCell.addEventListener("click", function () {
-            selecionarImagem(this);
-        });
-
-        var image = new Image();
-        image.onload = function () {
-            gridCell.appendChild(image);
-
-            var description = document.createElement("div");
-            description.classList.add("image-description");
-            description.style.display = "none";
-            gridCell.appendChild(description);
-
-            if (document.getElementById("change-positions").checked) {
-                adicionarBotaoFechar(gridCell);
-            }
-        };
-        image.src = url;
-        image.style.width = "100%";
-        image.style.height = "auto";
-
-        grid.appendChild(gridCell);
-
         Swal.fire({
             title: "Informações da imagem",
             html: `
@@ -80,6 +75,43 @@ document.addEventListener("DOMContentLoaded", function () {
                 var preco = document.getElementById("preco").value;
                 var autor = document.getElementById("autor").value;
                 var descricao = document.getElementById("descricao").value;
+
+                if (preco.trim() === "" || autor.trim() === "" || descricao.trim() === "") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Preencha todas as informações da descrição!",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                    return false;
+                }
+
+                var gridCell = document.createElement("div");
+                gridCell.classList.add("grid-cell");
+                gridCell.addEventListener("click", function () {
+                    selecionarImagem(this);
+                });
+
+                var image = new Image();
+                image.onload = function () {
+                    gridCell.appendChild(image);
+
+                    var description = document.createElement("div");
+                    description.classList.add("image-description");
+                    description.style.display = "none";
+                    gridCell.appendChild(description);
+
+                    if (document.getElementById("change-positions").checked) {
+                        adicionarBotaoFechar(gridCell);
+                        adicionarBotaoEditar(gridCell);
+                    }
+                };
+                image.src = url;
+                image.style.width = "100%";
+                image.style.height = "auto";
+
+                grid.appendChild(gridCell);
+
                 adicionarDescricao(gridCell, descricao, preco, autor);
 
                 images.push(image);
@@ -88,12 +120,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     preco: preco,
                     autor: autor,
                 });
-            },
-        }).then((result) => {
-            if (result.dismiss !== Swal.DismissReason.cancel) {
+
                 Swal.fire({
                     icon: "success",
-                    title: "Imagem adicionada com sucesso!",
+                    title: "Arquivo adicionado com sucesso!",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+
+                return true;
+            },
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    icon: "info",
+                    title: "Adição de arquivo cancelada!",
                     showConfirmButton: false,
                     timer: 1500,
                 });
@@ -107,14 +148,78 @@ document.addEventListener("DOMContentLoaded", function () {
         gridCells.forEach(function (gridCell) {
             if (changePositionsCheckbox.checked) {
                 adicionarBotaoFechar(gridCell);
+                adicionarBotaoEditar(gridCell);
             } else {
                 var closeButton = gridCell.querySelector(".close-button");
                 if (closeButton) {
                     closeButton.parentNode.removeChild(closeButton);
                 }
+                var editButton = gridCell.querySelector(".edit-button");
+                if (editButton) {
+                    editButton.parentNode.removeChild(editButton);
+                }
             }
         });
     });
+
+    function abrirAlertDescricao(gridCell, description) {
+        Swal.fire({
+            title: "Editar Descrição",
+            html: `
+            <input id="edit-preco" class="swal2-input" placeholder="Preço" type="text" value="${description.preco}">
+            <input id="edit-autor" class="swal2-input" placeholder="Autor" type="text" value="${description.autor}">
+            <input id="edit-descricao" class="swal2-input" placeholder="Descrição" type="text" value="${description.descricao}">
+          `,
+            showCancelButton: true,
+            confirmButtonText: "Salvar",
+            cancelButtonText: "Cancelar",
+            preConfirm: () => {
+                var preco = document.getElementById("edit-preco").value;
+                var autor = document.getElementById("edit-autor").value;
+                var descricao = document.getElementById("edit-descricao").value;
+
+                if (preco.trim() === "" || autor.trim() === "" || descricao.trim() === "") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Preencha todas as informações da descrição!",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                    return false;
+                }
+
+                description.preco = preco;
+                description.autor = autor;
+                description.descricao = descricao;
+
+                var index = Array.from(gridCell.parentNode.children).indexOf(gridCell);
+                var descriptionContent = gridCell.querySelector(".description-content");
+                descriptionContent.innerHTML = `
+              <p><strong>Preço:</strong> R$ ${preco}</p>
+              <p><strong>Autor:</strong> ${autor}</p>
+              <p><strong>Descrição:</strong> ${descricao}</p>
+            `;
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Descrição atualizada com sucesso!",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+
+                return true;
+            },
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    icon: "info",
+                    title: "Edição de descrição cancelada!",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
+        });
+    }
 
     function selecionarImagem(gridCell) {
         var changePositionsCheckbox = document.getElementById("change-positions");
@@ -140,30 +245,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function expandirImagem(gridCell) {
-        var changePositionsCheckbox = document.getElementById("change-positions");
-        if (!changePositionsCheckbox.checked && !gridCell.classList.contains("expanded")) {
+        if (!gridCell.classList.contains("expanded")) {
             var image = gridCell.querySelector("img");
             gridCell.classList.add("expanded");
             image.style.maxWidth = "100%";
             image.style.maxHeight = "100%";
 
-            // Criar o container para os botões
             var buttonContainer = document.createElement("div");
             buttonContainer.classList.add("button-container");
 
-            // Criar o botão de próxima imagem
             var nextButton = document.createElement("button");
             nextButton.innerText = "Próxima";
             nextButton.addEventListener("click", avancarImagem);
             buttonContainer.appendChild(nextButton);
 
-            // Criar o botão de imagem anterior
             var prevButton = document.createElement("button");
             prevButton.innerText = "Anterior";
             prevButton.addEventListener("click", retrocederImagem);
             buttonContainer.appendChild(prevButton);
 
-            // Adicionar o container de botões ao gridCell
             gridCell.appendChild(buttonContainer);
 
             var index = Array.from(gridCell.parentNode.children).indexOf(gridCell);
@@ -174,12 +274,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 var autor = descriptions[index].autor;
 
                 description.innerHTML = `
-              <div class="description-content">
-                <p><strong>Preço:</strong> R$ ${preco}</p>
-                <p><strong>Autor:</strong> ${autor}</p>
-                <p><strong>Descrição:</strong> ${descricao}</p>
-              </div>
-            `;
+          <div class="description-content">
+            <p><strong>Preço:</strong> R$ ${preco}</p>
+            <p><strong>Autor:</strong> ${autor}</p>
+            <p><strong>Descrição:</strong> ${descricao}</p>
+          </div>
+        `;
                 description.style.display = "block";
             }
 
@@ -189,10 +289,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
     function fecharImagem(gridCell) {
-        var changePositionsCheckbox = document.getElementById("change-positions");
-        if (!changePositionsCheckbox.checked) {
+        if (gridCell.classList.contains("expanded")) {
             gridCell.classList.remove("active");
 
             var buttonContainer = gridCell.querySelector(".button-container");
@@ -216,7 +314,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
     function trocarImagens(gridCell1, gridCell2) {
         var changePositionsCheckbox = document.getElementById("change-positions");
         if (changePositionsCheckbox.checked) {
@@ -226,13 +323,11 @@ document.addEventListener("DOMContentLoaded", function () {
             var description1 = gridCell1.querySelector(".image-description");
             var description2 = gridCell2.querySelector(".image-description");
 
-            // Trocar as imagens
             image1.parentNode.removeChild(image1);
             image2.parentNode.removeChild(image2);
             gridCell1.appendChild(image2);
             gridCell2.appendChild(image1);
 
-            // Trocar as descrições
             var index1 = Array.from(gridCell1.parentNode.children).indexOf(gridCell1);
             var index2 = Array.from(gridCell2.parentNode.children).indexOf(gridCell2);
 
@@ -303,18 +398,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function adicionarDescricao(gridCell, descricao, preco, autor) {
         var description = document.createElement("div");
-        description.classList.add("custom-description"); // Adicionado
         description.style.display = "none";
 
         description.innerHTML = `
-          <div class="description-content">
-            <p><strong>Preço:</strong> R$ ${preco}</p>
-            <p><strong>Autor:</strong> ${autor}</p>
-            <p><strong>Descrição:</strong> ${descricao}</p>
-          </div>
-        `;
+      <div class="description-content">
+        <p><strong>Preço:</strong> R$ ${preco}</p>
+        <p><strong>Autor:</strong> ${autor}</p>
+        <p><strong>Descrição:</strong> ${descricao}</p>
+      </div>
+    `;
 
         gridCell.appendChild(description);
     }
-
 });
