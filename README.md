@@ -1,4 +1,4 @@
-# Galeria de Imagens Interativa
+# 🖼️ Galeria de Imagens Interativa
 
 Este projeto é uma galeria de imagens interativa desenvolvida com HTML, CSS e JavaScript, que permite ao usuário adicionar, visualizar, editar e remover imagens com suas respectivas descrições.
 
