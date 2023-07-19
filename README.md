@@ -2,6 +2,8 @@
 
 Este projeto é uma galeria de imagens interativa desenvolvida com HTML, CSS e JavaScript, que permite ao usuário adicionar, visualizar, editar e remover imagens com suas respectivas descrições.
 
+![Image](https://github.com/Chainatow777/Resposive-Gallery/assets/107222555/7e29b725-e669-4935-a606-4e3b482f9822)
+
 ## Funcionalidades
 
 1. **Adicionar imagens:** Clique no ícone de câmera na barra lateral para adicionar imagens à galeria.
